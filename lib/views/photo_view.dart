@@ -14,19 +14,13 @@ class PhotosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mCubit = context.read<PhotoCubit>();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Photos"),
-      ),
-      body: BlocBuilder<PhotoCubit, CubitState>(
-        builder: (context, state) {
-          return PhotosBody(
-            state: state,
-            reachAtBottom: mCubit.loadNext,
-          );
-        },
-      ),
+    return BlocBuilder<PhotoCubit, CubitState>(
+      builder: (context, state) {
+        return PhotosBody(
+          state: state,
+          reachAtBottom: mCubit.loadNext,
+        );
+      },
     );
   }
 }

@@ -14,19 +14,13 @@ class PostsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mCubit = context.read<PostCubit>();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Posts"),
-      ),
-      body: BlocBuilder<PostCubit, CubitState>(
-        builder: (context, state) {
-          return PostsBody(
-            state: state,
-            reachAtBottom: mCubit.loadNext,
-          );
-        },
-      ),
+    return BlocBuilder<PostCubit, CubitState>(
+      builder: (context, state) {
+        return PostsBody(
+          state: state,
+          reachAtBottom: mCubit.loadNext,
+        );
+      },
     );
   }
 }

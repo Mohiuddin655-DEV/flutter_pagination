@@ -14,19 +14,13 @@ class AlbumsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mCubit = context.read<AlbumCubit>();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Albums"),
-      ),
-      body: BlocBuilder<AlbumCubit, CubitState>(
-        builder: (context, state) {
-          return AlbumsBody(
-            state: state,
-            reachAtBottom: mCubit.loadNext,
-          );
-        },
-      ),
+    return BlocBuilder<AlbumCubit, CubitState>(
+      builder: (context, state) {
+        return AlbumsBody(
+          state: state,
+          reachAtBottom: mCubit.loadNext,
+        );
+      },
     );
   }
 }

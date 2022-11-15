@@ -15,19 +15,13 @@ class CommentsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mCubit = context.read<CommentCubit>();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Comments"),
-      ),
-      body: BlocBuilder<CommentCubit, CubitState>(
-        builder: (context, state) {
-          return CommentsBody(
-            state: state,
-            reachAtBottom: mCubit.loadNext,
-          );
-        },
-      ),
+    return BlocBuilder<CommentCubit, CubitState>(
+      builder: (context, state) {
+        return CommentsBody(
+          state: state,
+          reachAtBottom: mCubit.loadNext,
+        );
+      },
     );
   }
 }

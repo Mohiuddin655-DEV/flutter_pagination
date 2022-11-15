@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_pagination/controllers/widget_controller.dart';
 import 'package:flutter_pagination/cubits/comment_cubit.dart';
 import 'package:flutter_pagination/cubits/cubit_album.dart';
 import 'package:flutter_pagination/cubits/photo_cubit.dart';
 import 'package:flutter_pagination/cubits/post_cubit.dart';
+import 'package:flutter_pagination/states/cubit_state.dart';
 import 'package:flutter_pagination/views/post_view.dart';
 
 import 'views/album_view.dart';
@@ -38,96 +38,128 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    final controller = Controller(context);
-    final items = ["Albums", "Comments", "Photos", "Posts"];
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Home".toUpperCase(),
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+    return DefaultTabController(
+      length: 4,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => AlbumCubit()..loadFirst()),
+          BlocProvider(create: (context) => CommentCubit()..loadFirst()),
+          BlocProvider(create: (context) => PhotoCubit()..loadFirst()),
+          BlocProvider(create: (context) => PostCubit()..loadFirst()),
+        ],
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: const TabBar(
+              automaticIndicatorColorAdjustment: true,
+              labelStyle: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              unselectedLabelStyle: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white54,
+                  overflow: TextOverflow.ellipsis),
+              labelPadding: EdgeInsets.symmetric(vertical: 8),
+              tabs: [
+                Text("Albums", style: TextStyle(fontSize: 16)),
+                Text("Comments", style: TextStyle(fontSize: 16)),
+                Text("Photos", style: TextStyle(fontSize: 16)),
+                Text("Posts", style: TextStyle(fontSize: 16)),
+              ],
+            ),
+            title: Text(
+              "Home".toUpperCase(),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            centerTitle: true,
+            elevation: 0,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarIconBrightness: Brightness.light,
+              statusBarColor: Colors.transparent,
+            ),
+          ),
+          body: const TabBarView(
+            children: [
+              AlbumsScreen(),
+              CommentsScreen(),
+              PhotosScreen(),
+              PostsScreen(),
+            ],
           ),
         ),
-        centerTitle: true,
-        elevation: 0,
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarIconBrightness: Brightness.light,
-          statusBarColor: Colors.transparent,
-        ),
       ),
-      body: SafeArea(
-        child: ListView.separated(
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return MaterialButton(
-              onPressed: () {
-                switch (item) {
-                  case "Albums":
-                    controller.loadScreen(
-                      BlocProvider(
-                        create: (context) => AlbumCubit()..loadFirst(),
-                        child: const AlbumsScreen(),
-                      ),
-                    );
-                    break;
-                  case "Comments":
-                    controller.loadScreen(
-                      BlocProvider(
-                        create: (context) => CommentCubit()..loadFirst(),
-                        child: const CommentsScreen(),
-                      ),
-                    );
-                    break;
-                  case "Photos":
-                    controller.loadScreen(
-                      BlocProvider(
-                        create: (context) => PhotoCubit()..loadFirst(),
-                        child: const PhotosScreen(),
-                      ),
-                    );
-                    break;
-                  case "Posts":
-                    controller.loadScreen(
-                      BlocProvider(
-                        create: (context) => PostCubit()..loadFirst(),
-                        child: const PostsScreen(),
-                      ),
-                    );
-                    break;
-                  default:
-                    controller.loadScreen(
-                      BlocProvider(
-                        create: (context) => PostCubit()..loadFirst(),
-                        child: const PostsScreen(),
-                      ),
-                    );
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: Center(
-                  child: Text(
-                    items[index],
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w300,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-          itemCount: items.length,
-          separatorBuilder: (context, index) {
-            return Container(
-              color: Colors.black.withOpacity(0.05),
-              height: 1,
-            );
-          },
-        ),
-      ),
+    );
+  }
+}
+
+class Albums extends StatelessWidget {
+  const Albums({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mCubit = context.read<AlbumCubit>();
+    return BlocBuilder<AlbumCubit, CubitState>(
+      builder: (context, state) {
+        return AlbumsBody(
+          state: state,
+          reachAtBottom: mCubit.loadNext,
+        );
+      },
+    );
+  }
+}
+
+class Comments extends StatelessWidget {
+  const Comments({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mCubit = context.read<CommentCubit>();
+    return BlocBuilder<CommentCubit, CubitState>(
+      builder: (context, state) {
+        return CommentsBody(
+          state: state,
+          reachAtBottom: mCubit.loadNext,
+        );
+      },
+    );
+  }
+}
+
+class Photos extends StatelessWidget {
+  const Photos({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mCubit = context.read<PhotoCubit>();
+    return BlocBuilder<PhotoCubit, CubitState>(
+      builder: (context, state) {
+        return PhotosBody(
+          state: state,
+          reachAtBottom: mCubit.loadNext,
+        );
+      },
+    );
+  }
+}
+
+class Posts extends StatelessWidget {
+  const Posts({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mCubit = context.read<PostCubit>();
+    return BlocBuilder<PostCubit, CubitState>(
+      builder: (context, state) {
+        return PostsBody(
+          state: state,
+          reachAtBottom: mCubit.loadNext,
+        );
+      },
     );
   }
 }
